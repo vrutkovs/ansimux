@@ -5,10 +5,9 @@ from ansible.vars.manager import VariableManager
 from ansible.inventory.manager import InventoryManager
 from ansible.parsing.dataloader import DataLoader
 
-_CHECK_SESSION = "tmux has-session -t {session} 2> /dev/null "
-_NEW_SESSION = "tmux new-session -d -s {session} -n {name} '{ssh}'"
-_NEW_WINDOW = "tmux new-window -t {session} '{ssh}'"
-_ATTACH_SESSION = "tmux attach-session -t {session}"
+_CHECK_SESSION = "tmux has-session 2> /dev/null "
+_NEW_SESSION = "tmux new-session -d -n {name} '{ssh}'"
+_NEW_WINDOW = "tmux new-window -n {name} '{ssh}'"
 
 
 def tmux_format():
@@ -46,11 +45,8 @@ def tmux_command(group_name='all', hosts=[], session=None, hostfile='hosts'):
             user=user and user + '@' or '',
             host=hostname,
         )
-        commands.append(next(tmux).format(
-            session=session, ssh=ssh, name=host.name,))
+        commands.append(next(tmux).format(ssh=ssh, name=host.name,))
 
-    if len(commands) > 0:
-        commands.append(_ATTACH_SESSION.format(session=session))
     return commands
 
 if __name__ == '__main__':
